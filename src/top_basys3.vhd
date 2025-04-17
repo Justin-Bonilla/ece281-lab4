@@ -77,7 +77,7 @@ begin
 	-- PORT MAPS ----------------------------------------
         sevenseg_decoder_inst: sevenseg_decoder port map (
           i_Hex => w_data,
-          o_seg_n => seg(7 downto 0)
+          o_seg_n => seg(6 downto 0)
         );
         elevator_controller_fsm1_inst: elevator_controller_fsm port map (
           i_clk => w_clk,
@@ -89,8 +89,8 @@ begin
         elevator_controller_fsm2_inst: elevator_controller_fsm port map (
           i_clk => w_clk,
           i_reset => w_btnUorR,
-          is_stopped => sw(0),
-          go_up_down => sw(1),
+          is_stopped => sw(14),
+          go_up_down => sw(15),
           o_floor => w_floor2
         );	
         clkdiv_inst : clock_divider 		--instantiation of clock_divider to take 
@@ -99,19 +99,24 @@ begin
             i_clk   => clk,
             i_reset => w_btnUorL,
             o_clk   => w_clk
+            
         );
-        TDM4_inst : TDM4 		
-        port map (		
+        TDM4_inst : TDM4 	port map (		
             i_clk => w_clk,				  
             i_reset => w_btnUorR,
+            i_D3 => x"F",
             i_D2 => w_floor2,
-            i_D0 => w_floor1
+            i_D1 => x"F",
+            i_D0 => w_floor1,
+            o_data => w_data,
+            o_sel => an(3 downto 0)
         );
 	
 	-- CONCURRENT STATEMENTS ----------------------------
 	
 	-- LED 15 gets the FSM slow clock signal. The rest are grounded.
 	led(14 downto 0) <= (others => '0');
+	led(15) <= w_clk;
 	-- leave unused switches UNCONNECTED. Ignore any warnings this causes.
 	
 	-- reset signals
