@@ -27,6 +27,7 @@ architecture top_basys3_arch of top_basys3 is
     -- signal declarations
     signal w_data : STD_LOGIC_VECTOR (3 downto 0);
     signal w_clk : std_logic;
+    signal w_clktdm : std_logic;
     signal w_floor1 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_floor2 : STD_LOGIC_VECTOR (3 downto 0);
     signal w_btnUorR : std_logic;
@@ -98,11 +99,18 @@ begin
         port map (						  
             i_clk   => clk,
             i_reset => w_btnUorL,
-            o_clk   => w_clk
+            o_clk   => w_clk 
+        );
+        clkdiv2_inst : clock_divider 		--instantiation of clock_divider to take 
+        generic map ( k_DIV => 500 ) -- 1 Hz clock from 100 MHz
+        port map (						  
+            i_clk   => clk,
+            i_reset => w_btnUorL,
+            o_clk   => w_clktdm
             
         );
         TDM4_inst : TDM4 	port map (		
-            i_clk => w_clk,				  
+            i_clk => w_clktdm,				  
             i_reset => w_btnUorR,
             i_D3 => x"F",
             i_D2 => w_floor2,
